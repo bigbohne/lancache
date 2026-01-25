@@ -1,0 +1,19 @@
+{
+  "name": "lancache",
+  "version": "1.0.0",
+  "description": "A high-performance caching server built with Bun",
+  "main": "src/lancache.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "bun run --watch src/lancache.ts",
+    "start": "bun src/lancache.ts",
+    "build": "bun build src/lancache.ts --outfile dist/lancache.js"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/bun": "^1.3.6"
+  },
+  "engines": {
+    "bun": ">=1.0.0"
+  }
+}
