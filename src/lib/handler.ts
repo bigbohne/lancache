@@ -36,6 +36,16 @@ export class RequestHandler {
         }
     })
 
+    private bytesServed = new Counter({
+        name: "lancache_bytes_served_total",
+        help: "Total number of bytes served from cache"
+    })
+
+    private bytesServedFromCache = new Counter({
+        name: "lancache_bytes_served_from_cache_total",
+        help: "Total number of bytes served from cache"
+    })
+
     private cacheSize = new Gauge({
         name: "lancache_size_bytes",
         help: "Current cache size in bytes"
@@ -78,6 +88,8 @@ export class RequestHandler {
         if (cachedData) {
             const cachedResponse = new Response(cachedData, { status: 200 });
             this.cacheHits.inc();
+            this.bytesServed.inc(cachedData.length);
+            this.bytesServedFromCache.inc(cachedData.length);
             return cachedResponse;
         }
 
@@ -91,6 +103,7 @@ export class RequestHandler {
 
         const backendResponse = new Response(backendData, { status: 200 });
         this.cacheMisses.inc();
+        this.bytesServed.inc(backendData.length);
         return backendResponse;
     }
 }
