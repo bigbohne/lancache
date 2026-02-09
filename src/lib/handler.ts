@@ -3,9 +3,22 @@ import { CacheHelper } from "./helper.ts";
 
 export class RequestHandler {
     private helper: CacheHelper = new CacheHelper();
-    private cache: FilesystemCache = new FilesystemCache("./cache", 10 * 1024 * 1024 * 1024); // 10 GB
+    private cache: FilesystemCache = new FilesystemCache("./cache", 15 * 1024 * 1024 * 1024); // 15 GB
 
-    constructor() {}
+    private hitCount: number = 0;
+    private missCount: number = 0;
+
+    public async initialize(): Promise<void> {
+        console.log("Initializing cache...");
+        await this.cache.initialize();
+        const stats = await this.cache.stats();
+        console.log(`Cache initialized: ${stats.itemCount} files and ${Math.round(stats.totalSize / (1024 * 1024 * 102.4)) / 10} gigabytes used.`);
+
+        setInterval(async () => {
+            await this.cache.evictIfNeeded();
+            const stats = await this.cache.stats();
+        }, 10 * 1000); // Evict every 10 seconds
+    }
 
     // Function that creates a cache key based on the requet URL
 
@@ -19,7 +32,8 @@ export class RequestHandler {
         const cachedData = await this.cache.get(cacheKey);
         if (cachedData) {
             const cachedResponse = new Response(cachedData, { status: 200 });
-            console.log("H: " + request.url);
+            //console.log("H: " + request.url);
+            this.hitCount++;
             return cachedResponse;
         }
 
@@ -32,8 +46,15 @@ export class RequestHandler {
         this.cache.set(cacheKey, backendData);
 
         const backendResponse = new Response(backendData, { status: 200 });
-        console.log("M: " + request.url);
+        //console.log("M: " + request.url);
+        this.missCount++;
         return backendResponse;
+    }
 
+    public getStats(): { hits: number; misses: number } {
+        return {
+            hits: this.hitCount,
+            misses: this.missCount,
+        };
     }
 }

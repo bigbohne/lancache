@@ -57,6 +57,10 @@ class BoundedLRUCache {
         return Array.from(this.cache.values()).reduce((sum, entry) => sum + entry.size, 0);
     }
 
+    count(): number {
+        return this.cache.size;
+    }
+
     export(): CacheEntry[] {
         return Array.from(this.cache.values());
     }
