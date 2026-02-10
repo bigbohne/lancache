@@ -6,8 +6,9 @@ export type CacheEntry = {
 }
 
 class BoundedLRUCache {
-    private cache: Map<string, CacheEntry> =
-        new Map();
+    private cache: Map<string, CacheEntry> = new Map();
+    
+    private totalSizeCounter: number = 0;
     private maxSize: number;
 
     constructor(maxSize: number) {
@@ -16,6 +17,13 @@ class BoundedLRUCache {
 
     set(key: string, size: number): void {
         const now = Date.now();
+
+        if (this.cache.has(key)) {
+            const existing = this.cache.get(key)!;
+            this.totalSizeCounter -= existing.size;
+        }
+
+        this.totalSizeCounter += size;
         this.cache.set(key, { key, size, createdAt: now, lastAccessed: now });
     }
 
@@ -48,13 +56,14 @@ class BoundedLRUCache {
             this.cache.delete(key);
             evicted.push(key);
             totalSize -= entry.size;
+            this.totalSizeCounter -= entry.size;
         }
 
         return evicted;
     }
 
     totalSize(): number {
-        return Array.from(this.cache.values()).reduce((sum, entry) => sum + entry.size, 0);
+        return this.totalSizeCounter;
     }
 
     count(): number {
