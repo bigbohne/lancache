@@ -4,7 +4,7 @@ This document describes how to setup a lancache server once you have a server wi
 
 # Steps
 
-- Packages: `dnsmasq iptables-persistent`
+- Packages: `dnsmasq iptables-persistent docker.io`
 
 # Container
 
@@ -17,6 +17,18 @@ This document describes how to setup a lancache server once you have a server wi
 `docker run --name sniproxy -p 10.13.37.2:443:443 -d --restart always lancachenet/sniproxy:latest`
 
 # Files
+
+## /usr/lib/systemd/system/dnsmasq.service
+
+```
+[Unit]
+Description=dnsmasq - A lightweight DHCP and caching DNS server
+Wants=network-online.target
+After=network-online.target
+Requires=network-online.target
+
+...
+```
 
 ## /etc/netplan/50-cloud-init.yaml
 
