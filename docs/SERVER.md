@@ -69,11 +69,18 @@ dhcp-range=10.13.37.100,10.13.37.200,12h
 ## /etc/iptables/rules.v4
 
 ```
+*filter
+:INPUT ACCEPT [1039:127476]
+:FORWARD ACCEPT [28454:36272434]
+:OUTPUT ACCEPT [0:0]
+# Disallow access to private networks
+-A FORWARD -d 192.168.0.0/16 -i lan -j DROP
 *nat
 :PREROUTING ACCEPT [0:0]
 :INPUT ACCEPT [0:0]
 :OUTPUT ACCEPT [0:0]
 :POSTROUTING ACCEPT [1:168]
+# Allow internet access
 -A POSTROUTING -o wan -j MASQUERADE
 COMMIT
 ```
