@@ -4,7 +4,7 @@ This document describes how to setup a lancache server once you have a server wi
 
 # Steps
 
-- Packages: `dnsmasq iptables-persistent docker.io`
+- Packages: `dnsmasq iptables-persistent docker.io docker-compose`
 
 # Container
 

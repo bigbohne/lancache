@@ -2,11 +2,12 @@ import { FilesystemCache } from "./caches/filesystem.ts";
 import { CacheHelper } from "./helper.ts";
 import { Counter, Gauge } from "prom-client";
 
-const CACHE_MAX_SIZE = 15 * 1024 * 1024 * 1024; // 15 GB
+const CACHE_MAX_SIZE = process.env.LANCACHE_CACHE_SIZE ? parseInt(process.env.LANCACHE_CACHE_SIZE) : 15 * 1024 * 1024 * 1024; // 15 GB
+const CACHE_DIR = process.env.LANCACHE_CACHE_DIR || "/cache";
 
 export class RequestHandler {
     private helper: CacheHelper = new CacheHelper();
-    private cache: FilesystemCache = new FilesystemCache("./cache", CACHE_MAX_SIZE);
+    private cache: FilesystemCache = new FilesystemCache(CACHE_DIR, CACHE_MAX_SIZE);
 
     private cacheRequests = new Counter({
         name: "lancache_requests_total",
